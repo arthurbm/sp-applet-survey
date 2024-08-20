@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Applet template</title>
+        <title>Strateegia survey</title>
         <meta
           name="description"
           content="Crie pontos de partida com conteúdos de referência"
@@ -27,10 +27,10 @@ export default function Home() {
         <FullPageLayout>
           <Box className="loginWrap" p={[6, 7]}>
             <Heading as="h1" size="lg" mb={4}>
-              Applet template
+              Strateegia survey
             </Heading>
             <Text fontSize="sm" color="gray.400" mb={8}>
-              Descrição do applet
+              Faça pesquisas usando o poder de Strateegia
             </Text>
             <Button
               onClick={() => router.push("/login")}
