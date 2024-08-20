@@ -56,18 +56,22 @@ const Dashboard: React.FC = () => {
   }, [journeyId, journeys, methods]);
 
   useEffect(() => {
-    if (
-      journey?.maps &&
-      journey.maps.length > 0 &&
-      (!mapId || !journey.maps.some((m) => m.id === mapId))
-    ) {
+    // Reset mapId and pointId when journeyId changes
+    methods.setValue("mapId", "");
+    methods.setValue("pointId", "");
+
+    // Set new mapId if available
+    if (journey?.maps && journey.maps.length > 0) {
       methods.setValue("mapId", journey.maps[0].id);
-      methods.setValue("pointId", ""); // Reset pointId when map changes
     }
-  }, [journey, mapId, methods]);
+  }, [journey, methods]);
 
   useEffect(() => {
-    if (map?.points && map.points.length > 0 && !methods.getValues("pointId")) {
+    // Reset pointId when mapId changes
+    methods.setValue("pointId", "");
+
+    // Set new pointId if available
+    if (map?.points && map.points.length > 0) {
       methods.setValue("pointId", map.points[0].id);
     }
   }, [map, methods]);
@@ -115,7 +119,7 @@ const Dashboard: React.FC = () => {
                 </option>
               ))
             ) : (
-              <option value="">No maps available</option>
+              <option value="">Carregando</option>
             )}
           </SelectField>
 
@@ -125,17 +129,19 @@ const Dashboard: React.FC = () => {
             isDisabled={mapIsPending || !map?.points || map.points.length === 0}
           >
             {map?.points && map.points.length > 0 ? (
-              map.points.map((point) => (
-                <option key={point.id} value={point.id}>
-                  {point.title}
-                </option>
-              ))
+              map.points
+                .filter((point) => point.point_type === "DIVERGENCE")
+                .map((point) => (
+                  <option key={point.id} value={point.id}>
+                    {point.title}
+                  </option>
+                ))
             ) : (
-              <option value="">No points available</option>
+              <option value="">Carregando</option>
             )}
           </SelectField>
         </FormProvider>
-        <Button onClick={handleLogout} colorScheme="pink">
+        <Button onClick={handleLogout} colorScheme="pink" w="20">
           sair
         </Button>
       </VStack>
