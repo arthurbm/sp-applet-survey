@@ -6,7 +6,7 @@ import { useMyJourneys } from "@/hooks/useMyJourneys";
 import { logout } from "@/services/auth";
 import { Button, Container, Heading, Text, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { InferType, object, string } from "yup";
@@ -49,23 +49,28 @@ const Dashboard: React.FC = () => {
     enabled: !!mapId,
   });
 
-  // Set initial values if not set
-  if (!journeyId && journeys.pages[0].content.length > 0) {
-    methods.setValue("journeyId", journeys.pages[0].content[0].id);
-  }
+  useEffect(() => {
+    if (!journeyId && journeys.pages[0].content.length > 0) {
+      methods.setValue("journeyId", journeys.pages[0].content[0].id);
+    }
+  }, [journeyId, journeys, methods]);
 
-  if (
-    journey?.maps &&
-    journey.maps.length > 0 &&
-    (!mapId || !journey.maps.some((m) => m.id === mapId))
-  ) {
-    methods.setValue("mapId", journey.maps[0].id);
-    methods.setValue("pointId", ""); // Reset pointId when map changes
-  }
+  useEffect(() => {
+    if (
+      journey?.maps &&
+      journey.maps.length > 0 &&
+      (!mapId || !journey.maps.some((m) => m.id === mapId))
+    ) {
+      methods.setValue("mapId", journey.maps[0].id);
+      methods.setValue("pointId", ""); // Reset pointId when map changes
+    }
+  }, [journey, mapId, methods]);
 
-  if (map?.points && map.points.length > 0 && !methods.getValues("pointId")) {
-    methods.setValue("pointId", map.points[0].id);
-  }
+  useEffect(() => {
+    if (map?.points && map.points.length > 0 && !methods.getValues("pointId")) {
+      methods.setValue("pointId", map.points[0].id);
+    }
+  }, [map, methods]);
 
   const handleLogout = async () => {
     router.push("/");
