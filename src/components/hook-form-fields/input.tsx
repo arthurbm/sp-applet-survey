@@ -21,6 +21,7 @@ interface FieldProps extends InputProps {
   fieldName: string;
   label?: string;
   labelProps?: FormLabelProps;
+  isRequired?: boolean;
 }
 
 export const InputField = ({
@@ -28,6 +29,7 @@ export const InputField = ({
   label,
   labelProps,
   type,
+  isRequired,
   ...props
 }: FieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -46,7 +48,7 @@ export const InputField = ({
 
   return (
     <Box w="full">
-      <FormControl isInvalid={!!error}>
+      <FormControl isInvalid={!!error} isRequired={isRequired}>
         {label && (
           <FormLabel
             htmlFor={fieldName}

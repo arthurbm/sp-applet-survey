@@ -81,65 +81,80 @@ const Dashboard: React.FC = () => {
     await logout();
   };
 
+  const onSubmit = (data: SchemaType) => {
+    router.push(`/dashboard/survey/${data.pointId}`);
+  };
+
   return (
     <Container pt={10}>
       <VStack spacing={4} align={"left"} w={"full"}>
-        <Heading>Applet template</Heading>
-        <Text>Olá, {user?.name}</Text>
+        <Heading>Strateegia Survey</Heading>
         <FormProvider {...methods}>
-          <SelectField
-            label="Selecione a jornada"
-            fieldName="journeyId"
-            isDisabled={
-              journeysIsPending || journeys.pages[0].content.length === 0
-            }
-          >
-            {journeys.pages[0].content.length > 0 ? (
-              journeys.pages[0].content.map((journey) => (
-                <option key={journey.id} value={journey.id}>
-                  {journey.title}
-                </option>
-              ))
-            ) : (
-              <option value="">No journeys available</option>
-            )}
-          </SelectField>
+          <form onSubmit={methods.handleSubmit(onSubmit)}>
+            <VStack spacing={4} align={"left"} w={"full"}>
+              <SelectField
+                label="Selecione a jornada"
+                fieldName="journeyId"
+                isDisabled={
+                  journeysIsPending || journeys.pages[0].content.length === 0
+                }
+              >
+                {journeys.pages[0].content.length > 0 ? (
+                  journeys.pages[0].content.map((journey) => (
+                    <option key={journey.id} value={journey.id}>
+                      {journey.title}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">Carregando</option>
+                )}
+              </SelectField>
 
-          <SelectField
-            label="Selecione o mapa"
-            fieldName="mapId"
-            isDisabled={
-              journeyIsPending || !journey?.maps || journey.maps.length === 0
-            }
-          >
-            {journey?.maps && journey.maps.length > 0 ? (
-              journey.maps.map((map) => (
-                <option key={map.id} value={map.id}>
-                  {map.title}
-                </option>
-              ))
-            ) : (
-              <option value="">Carregando</option>
-            )}
-          </SelectField>
+              <SelectField
+                label="Selecione o mapa"
+                fieldName="mapId"
+                isDisabled={
+                  journeyIsPending ||
+                  !journey?.maps ||
+                  journey.maps.length === 0
+                }
+              >
+                {journey?.maps && journey.maps.length > 0 ? (
+                  journey.maps.map((map) => (
+                    <option key={map.id} value={map.id}>
+                      {map.title}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">Carregando</option>
+                )}
+              </SelectField>
 
-          <SelectField
-            label="Selecione o ponto"
-            fieldName="pointId"
-            isDisabled={mapIsPending || !map?.points || map.points.length === 0}
-          >
-            {map?.points && map.points.length > 0 ? (
-              map.points
-                .filter((point) => point.point_type === "DIVERGENCE")
-                .map((point) => (
-                  <option key={point.id} value={point.id}>
-                    {point.title}
-                  </option>
-                ))
-            ) : (
-              <option value="">Carregando</option>
-            )}
-          </SelectField>
+              <SelectField
+                label="Selecione o ponto"
+                fieldName="pointId"
+                isDisabled={
+                  mapIsPending || !map?.points || map.points.length === 0
+                }
+              >
+                {map?.points && map.points.length > 0 ? (
+                  map.points
+                    .filter((point) => point.point_type === "DIVERGENCE")
+                    .map((point) => (
+                      <option key={point.id} value={point.id}>
+                        {point.title}
+                      </option>
+                    ))
+                ) : (
+                  <option value="">Carregando</option>
+                )}
+              </SelectField>
+
+              <Button type="submit" colorScheme="blue" w="full">
+                Escolher
+              </Button>
+            </VStack>
+          </form>
         </FormProvider>
         <Button onClick={handleLogout} colorScheme="pink" w="20">
           sair
