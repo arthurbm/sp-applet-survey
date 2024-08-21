@@ -47,6 +47,14 @@ const Survey = () => {
         questionId,
       });
 
+      // make all the fields empty
+      methods.setValue("name", "");
+      methods.setValue("email", "");
+      methods.setValue("phone", "");
+      methods.setValue("age", "");
+      methods.setValue("gender", "");
+      methods.setValue("answer", "");
+
       toast({
         title: "Resposta enviada com sucesso!",
         status: "success",

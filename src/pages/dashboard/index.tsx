@@ -23,7 +23,6 @@ type SchemaType = InferType<typeof schema>;
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
-  const { user } = useMe();
 
   const methods = useForm<SchemaType>({
     resolver: yupResolver(schema),
