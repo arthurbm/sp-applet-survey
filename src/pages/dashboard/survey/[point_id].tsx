@@ -13,6 +13,7 @@ const schema = object({
   email: string().optional(),
   phone: string().optional(),
   age: string().optional(),
+  gender: string().optional(),
 });
 
 type SchemaType = InferType<typeof schema>;
@@ -91,6 +92,12 @@ const Survey = () => {
                 fieldName="age"
                 label="Idade"
                 placeholder="Preencha a idade"
+              />
+
+              <InputField
+                fieldName="gender"
+                label="Gênero"
+                placeholder="Preencha o gênero"
               />
 
               <TextAreaField
