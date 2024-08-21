@@ -3,6 +3,8 @@ import { Montserrat } from "next/font/google";
 import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import { FullPageLayout } from "@/templates/full-page-layout";
 import { useRouter } from "next/router";
+import Image from "next/image";
+import banner from "@/assets/images/banner.jpg";
 
 const fonts = Montserrat({
   weight: ["300", "400", "500", "600", "700"],
@@ -32,11 +34,13 @@ export default function Home() {
             <Text fontSize="sm" color="gray.400" mb={8}>
               Faça pesquisas usando o poder de Strateegia
             </Text>
+            <Image src={banner} alt="Survey" width={500} height={500} />
             <Button
               onClick={() => router.push("/login")}
               colorScheme="pink"
               size="md"
               w="full"
+              mt={8}
               mb={4}
             >
               Vamos lá!
