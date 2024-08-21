@@ -70,7 +70,7 @@ export const TextAreaField = ({
           <FormLabel
             htmlFor={fieldName}
             fontSize="md"
-            fontWeight="medium"
+            fontWeight="normal"
             color="gray.400"
             {...labelProps}
           >

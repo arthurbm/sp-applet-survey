@@ -8,7 +8,7 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { InferType, object, string } from "yup";
 
 const schema = object({
-  answer: string().required(),
+  answer: string().required("Campo obrigatório"),
   name: string().optional(),
   email: string().optional(),
   phone: string().optional(),
@@ -64,9 +64,8 @@ const Survey = () => {
   };
 
   return (
-    <Container pt={10}>
+    <Container py={10}>
       <VStack spacing={4} align={"left"} w="full">
-        <Heading>Survey</Heading>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <VStack spacing={4} align={"left"} w={"full"}>
             <FormProvider {...methods}>
