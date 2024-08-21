@@ -15,12 +15,14 @@ interface FieldProps extends Omit<TextareaProps, "children"> {
   fieldName: string;
   label?: string;
   labelProps?: FormLabelProps;
+  isRequired?: boolean;
 }
 
 export const TextAreaField = ({
   fieldName,
   label,
   labelProps,
+  isRequired,
   ...props
 }: FieldProps) => {
   const { register } = useFormContext();
@@ -63,7 +65,7 @@ export const TextAreaField = ({
 
   return (
     <Box w="full">
-      <FormControl isInvalid={!!error}>
+      <FormControl isInvalid={!!error} isRequired={isRequired}>
         {label && (
           <FormLabel
             htmlFor={fieldName}

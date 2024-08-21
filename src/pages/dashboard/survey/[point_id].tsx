@@ -38,7 +38,7 @@ const Survey = () => {
       const age = data.age ? `Idade: ${data.age}` : "";
       const answer = `Resposta: ${data.answer}`;
 
-      const text = [answer, name, email, phone, age].join("\n");
+      const text = [name, email, phone, age, answer].join("\n");
 
       await mutateComment.mutateAsync({
         text: text,
@@ -72,7 +72,7 @@ const Survey = () => {
             <FormProvider {...methods}>
               <InputField
                 fieldName="name"
-                label="Nome da pessoa"
+                label="Nome"
                 placeholder="Preencha o nome da pessoa"
               />
 
@@ -98,9 +98,17 @@ const Survey = () => {
                 fieldName="answer"
                 label="Resposta"
                 placeholder={"Preencha a resposta"}
+                isRequired
               />
 
-              <Button type="submit" colorScheme="pink">
+              <Button
+                type="submit"
+                colorScheme="pink"
+                isDisabled={
+                  mutateComment.isPending || !methods.formState.isValid
+                }
+                isLoading={mutateComment.isPending}
+              >
                 Enviar
               </Button>
             </FormProvider>
