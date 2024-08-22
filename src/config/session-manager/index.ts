@@ -1,21 +1,21 @@
 const key = "session";
 
 export const sessionManager = (() => {
-  let value: { exp: number; token: string } | null = null;
+  let value: number | null = null;
 
-  const _getLocalSession = (): { exp: number; token: string } | null => {
+  const _getLocalSession = (): number | null => {
     const sessionData = sessionStorage.getItem(key);
     const localData = localStorage.getItem(key);
     const sessionString = sessionData || localData;
 
     if (sessionString) {
-      return JSON.parse(sessionString);
+      return parseInt(sessionString);
     }
 
     return null;
   };
 
-  const getSession = () => {
+  const _getSession = () => {
     if (value) {
       return value;
     }
@@ -31,13 +31,13 @@ export const sessionManager = (() => {
     value = null;
   };
 
-  const startSession = (keepConnected = false, exp: number, token: string) => {
+  const startSession = (keepConnected = false, exp: number) => {
     _clear();
-    value = { exp, token };
+    value = exp;
     if (keepConnected) {
-      localStorage.setItem(key, JSON.stringify({ exp, token }));
+      localStorage.setItem(key, exp.toString());
     }
-    sessionStorage.setItem(key, JSON.stringify({ exp, token }));
+    sessionStorage.setItem(key, exp.toString());
   };
 
   const endSession = () => {
@@ -45,17 +45,19 @@ export const sessionManager = (() => {
   };
 
   const hasSession = () => {
-    const session = getSession();
+    const session = _getSession();
+
     return !!session;
   };
 
   const isExpired = () => {
-    const session = getSession();
-    if (!session) {
+    const exp = _getSession();
+    if (!exp) {
       return true;
     }
 
-    const { isValid } = validateExpiration(session.exp);
+    const { isValid } = validateExpiration(exp);
+
     return !isValid;
   };
 
@@ -64,9 +66,9 @@ export const sessionManager = (() => {
     return { isValid };
   };
 
-  const updateSession = (exp: number, token: string) => {
+  const updateSession = (exp: number) => {
     const keepConnected = !!localStorage.getItem(key);
-    startSession(keepConnected, exp, token);
+    startSession(keepConnected, exp);
   };
 
   return {
@@ -76,6 +78,5 @@ export const sessionManager = (() => {
     isExpired,
     updateSession,
     validateExpiration,
-    getSession,
   };
 })();

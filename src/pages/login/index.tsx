@@ -49,7 +49,6 @@ export default function Home() {
         password: data.password,
         keepConnected: !!data.keepConnected,
       });
-      // const user = await getMe();
 
       setIsLoading(false);
       router.push("/dashboard");

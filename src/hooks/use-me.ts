@@ -6,13 +6,12 @@ import { userKeys } from "@/query";
 
 export const useMe = () => {
   const queryClient = useQueryClient();
-  // const isAuthenticated = sessionManager.hasSession();
+  const isAuthenticated = sessionManager.hasSession();
 
   const { data, isLoading } = useQuery({
     queryKey: userKeys.me(),
     queryFn: getMe,
-    // TODO: Change once authentication with cookies SameSite=Strict is implemented
-    // enabled: isAuthenticated,
+    enabled: isAuthenticated,
   });
 
   return {
