@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { sessionManager } from "@/config/session-manager";
+import Cookies from "js-cookie";
+import jwtDecode from "jwt-decode";
 
 export function useAuthCheck() {
   const router = useRouter();
@@ -8,8 +10,26 @@ export function useAuthCheck() {
 
   useEffect(() => {
     const checkAuth = () => {
-      const hasValidSession =
+      const accessToken = Cookies.get("accessToken");
+      let hasValidSession =
         sessionManager.hasSession() && !sessionManager.isExpired();
+
+      // Handle edge case: accessToken exists but not in session manager
+      if (accessToken && !hasValidSession) {
+        try {
+          const decodedToken = jwtDecode<{ exp: number }>(accessToken);
+          const expirationTime = decodedToken.exp;
+
+          // Update session manager with the token from the cookie
+          sessionManager.startSession(false, expirationTime); // Assuming we don't want to keep connected by default
+          hasValidSession = true;
+        } catch (error) {
+          console.error("Error decoding access token:", error);
+          // If there's an error decoding the token, we'll consider it invalid
+          Cookies.remove("accessToken");
+        }
+      }
+
       setIsAuthenticated(hasValidSession);
 
       if (router.pathname === "/") {
