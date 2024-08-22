@@ -47,7 +47,7 @@ export default function Home() {
       await auth({
         email: data.email,
         password: data.password,
-        keepConnected: !!data.keepConnected,
+        keepConnected: true,
       });
 
       setIsLoading(false);

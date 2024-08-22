@@ -14,6 +14,9 @@ export function useAuthCheck() {
       let hasValidSession =
         sessionManager.hasSession() && !sessionManager.isExpired();
 
+      console.log("hasValidSession", hasValidSession);
+      console.log("accessToken", accessToken);
+
       // Handle edge case: accessToken exists but not in session manager
       if (accessToken && !hasValidSession) {
         try {
@@ -21,7 +24,7 @@ export function useAuthCheck() {
           const expirationTime = decodedToken.exp;
 
           // Update session manager with the token from the cookie
-          sessionManager.startSession(false, expirationTime); // Assuming we don't want to keep connected by default
+          sessionManager.startSession(true, expirationTime); // Assuming we don't want to keep connected by default
           hasValidSession = true;
         } catch (error) {
           console.error("Error decoding access token:", error);
