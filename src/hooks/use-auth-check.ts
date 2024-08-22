@@ -4,9 +4,44 @@ import { sessionManager } from "@/config/session-manager";
 import Cookies from "js-cookie";
 import jwtDecode from "jwt-decode";
 
-function getAccessToken() {
+function debugCookies() {
+  console.group("Cookie Debugging");
+
+  // Log all cookies
+  console.log("All cookies:", document.cookie);
+
+  // Try to get the access token using js-cookie
+  const jsCookieToken = Cookies.get("accessToken");
+  console.log("js-cookie accessToken:", jsCookieToken);
+
+  // Manually parse cookies
+  const allCookies = document.cookie.split(";").reduce((acc, cookie) => {
+    const [key, value] = cookie.trim().split("=");
+    acc[key] = value;
+    return acc;
+  }, {} as Record<string, string>);
+  console.log("Manually parsed cookies:", allCookies);
+
+  // Check for accessToken specifically
+  console.log("Manually found accessToken:", allCookies["accessToken"]);
+
+  // Check localStorage and sessionStorage
+  console.log("localStorage accessToken:", localStorage.getItem("accessToken"));
+  console.log(
+    "sessionStorage accessToken:",
+    sessionStorage.getItem("accessToken")
+  );
+
+  // Log session manager state
+  console.log("Session manager has session:", sessionManager.hasSession());
+  console.log("Session manager is expired:", sessionManager.isExpired());
+
+  console.groupEnd();
+}
+
+function getAccessToken(): string | undefined {
   // Try to get the token using js-cookie
-  let accessToken = Cookies.get("accessToken");
+  let accessToken: string | undefined = Cookies.get("accessToken");
 
   // If js-cookie fails, try to parse the cookie string manually
   if (!accessToken) {
@@ -19,6 +54,14 @@ function getAccessToken() {
     }
   }
 
+  // If still no access token, check localStorage and sessionStorage
+  if (!accessToken) {
+    accessToken =
+      localStorage.getItem("accessToken") ||
+      sessionStorage.getItem("accessToken") ||
+      undefined; // Assign undefined if still no access token
+  }
+
   return accessToken;
 }
 
@@ -28,52 +71,45 @@ export function useAuthCheck() {
 
   useEffect(() => {
     const checkAuth = () => {
+      debugCookies(); // Call our debug function
+
       const accessToken = getAccessToken();
       let hasValidSession =
         sessionManager.hasSession() && !sessionManager.isExpired();
 
-      console.log("Access Token:", accessToken); // For debugging
+      console.log("Final Access Token:", accessToken);
 
-      // Handle edge case: accessToken exists but not in session manager
       if (accessToken && !hasValidSession) {
         try {
           const decodedToken = jwtDecode<{ exp: number }>(accessToken);
           const expirationTime = decodedToken.exp;
 
-          console.log("Decoded Token:", decodedToken); // For debugging
+          console.log("Decoded Token:", decodedToken);
 
-          // Update session manager with the token from the cookie
-          sessionManager.startSession(false, expirationTime); // Assuming we don't want to keep connected by default
+          sessionManager.startSession(false, expirationTime);
           hasValidSession = true;
         } catch (error) {
           console.error("Error decoding access token:", error);
-          // If there's an error decoding the token, we'll consider it invalid
-          // Note: We can't remove HttpOnly cookies via JavaScript
         }
       }
 
       setIsAuthenticated(hasValidSession);
 
       if (router.pathname === "/") {
-        // On the hero page, do nothing
         return;
       }
 
       if (!hasValidSession && router.pathname.startsWith("/dashboard")) {
-        // Redirect to login if not authenticated and trying to access dashboard
         router.push("/login");
       } else if (hasValidSession && router.pathname === "/login") {
-        // Redirect to dashboard if authenticated and on login page
         router.push("/dashboard");
       }
     };
 
     checkAuth();
 
-    // Add event listener for route changes
     router.events.on("routeChangeComplete", checkAuth);
 
-    // Clean up the event listener
     return () => {
       router.events.off("routeChangeComplete", checkAuth);
     };
