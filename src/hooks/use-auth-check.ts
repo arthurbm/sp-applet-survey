@@ -4,18 +4,35 @@ import { sessionManager } from "@/config/session-manager";
 import Cookies from "js-cookie";
 import jwtDecode from "jwt-decode";
 
+function getAccessToken() {
+  // Try to get the token using js-cookie
+  let accessToken = Cookies.get("accessToken");
+
+  // If js-cookie fails, try to parse the cookie string manually
+  if (!accessToken) {
+    const cookies = document.cookie.split(";");
+    const tokenCookie = cookies.find((cookie) =>
+      cookie.trim().startsWith("accessToken=")
+    );
+    if (tokenCookie) {
+      accessToken = tokenCookie.split("=")[1];
+    }
+  }
+
+  return accessToken;
+}
+
 export function useAuthCheck() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkAuth = () => {
-      const accessToken = Cookies.get("accessToken");
+      const accessToken = getAccessToken();
       let hasValidSession =
         sessionManager.hasSession() && !sessionManager.isExpired();
 
-      console.log("hasValidSession", hasValidSession);
-      console.log("accessToken", accessToken);
+      console.log("Access Token:", accessToken); // For debugging
 
       // Handle edge case: accessToken exists but not in session manager
       if (accessToken && !hasValidSession) {
@@ -23,13 +40,15 @@ export function useAuthCheck() {
           const decodedToken = jwtDecode<{ exp: number }>(accessToken);
           const expirationTime = decodedToken.exp;
 
+          console.log("Decoded Token:", decodedToken); // For debugging
+
           // Update session manager with the token from the cookie
-          sessionManager.startSession(true, expirationTime); // Assuming we don't want to keep connected by default
+          sessionManager.startSession(false, expirationTime); // Assuming we don't want to keep connected by default
           hasValidSession = true;
         } catch (error) {
           console.error("Error decoding access token:", error);
           // If there's an error decoding the token, we'll consider it invalid
-          Cookies.remove("accessToken");
+          // Note: We can't remove HttpOnly cookies via JavaScript
         }
       }
 
