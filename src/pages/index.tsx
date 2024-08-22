@@ -20,7 +20,7 @@ export default function Home() {
         <title>Strateegia survey</title>
         <meta
           name="description"
-          content="Crie pontos de partida com conteúdos de referência"
+          content="Faça pesquisas usando o poder de Strateegia"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
