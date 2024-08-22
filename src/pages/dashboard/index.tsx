@@ -57,18 +57,44 @@ const Dashboard: React.FC = () => {
     });
 
   useEffect(() => {
-    methods.setValue("mapId", "");
+    if (!journeyId && journeys.pages[0].content.length > 0) {
+      methods.setValue("journeyId", journeys.pages[0].content[0].id);
+    }
+  }, [journeys, journeyId, methods]);
+
+  useEffect(() => {
+    if (journey?.maps && journey.maps.length > 0) {
+      methods.setValue("mapId", journey.maps[0].id);
+    } else {
+      methods.setValue("mapId", "");
+    }
     methods.setValue("pointId", "");
     methods.setValue("questionId", "");
   }, [journey, methods]);
 
   useEffect(() => {
-    methods.setValue("pointId", "");
+    if (map?.points && map.points.length > 0) {
+      const divergencePoints = map.points.filter(
+        (point) => point.point_type === "DIVERGENCE"
+      );
+      if (divergencePoints.length > 0) {
+        methods.setValue("pointId", divergencePoints[0].id);
+      }
+    } else {
+      methods.setValue("pointId", "");
+    }
     methods.setValue("questionId", "");
   }, [map, methods]);
 
   useEffect(() => {
-    methods.setValue("questionId", "");
+    if (
+      divergencePoint?.tool.questions &&
+      divergencePoint.tool.questions.length > 0
+    ) {
+      methods.setValue("questionId", divergencePoint.tool.questions[0].id);
+    } else {
+      methods.setValue("questionId", "");
+    }
   }, [divergencePoint, methods]);
 
   const handleLogout = async () => {
@@ -90,72 +116,77 @@ const Dashboard: React.FC = () => {
               <SelectField
                 label="Selecione a jornada"
                 fieldName="journeyId"
-                isDisabled={
-                  journeysIsPending || journeys.pages[0].content.length === 0
-                }
+                isDisabled={journeysIsPending}
               >
-                <option value="">Selecione uma jornada</option>
-                {journeys.pages[0].content.map((journey) => (
-                  <option key={journey.id} value={journey.id}>
-                    {journey.title}
-                  </option>
-                ))}
+                {journeysIsPending ? (
+                  <option value="">Carregando...</option>
+                ) : (
+                  journeys.pages[0].content.map((journey) => (
+                    <option key={journey.id} value={journey.id}>
+                      {journey.title}
+                    </option>
+                  ))
+                )}
               </SelectField>
 
               <SelectField
                 label="Selecione o mapa"
                 fieldName="mapId"
-                isDisabled={
-                  !journeyId ||
-                  journeyIsPending ||
-                  !journey?.maps ||
-                  journey.maps.length === 0
-                }
+                isDisabled={!journeyId || journeyIsPending}
               >
-                <option value="">Selecione um mapa</option>
-                {journey?.maps?.map((map) => (
-                  <option key={map.id} value={map.id}>
-                    {map.title}
-                  </option>
-                ))}
+                {journeyIsPending ? (
+                  <option value="">Carregando...</option>
+                ) : journey?.maps?.length ? (
+                  journey.maps.map((map) => (
+                    <option key={map.id} value={map.id}>
+                      {map.title}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">Nenhum mapa disponível</option>
+                )}
               </SelectField>
 
               <SelectField
                 label="Selecione o ponto"
                 fieldName="pointId"
-                isDisabled={
-                  !mapId ||
-                  mapIsPending ||
-                  !map?.points ||
-                  map.points.length === 0
-                }
+                isDisabled={!mapId || mapIsPending}
               >
-                <option value="">Selecione um ponto</option>
-                {map?.points
-                  ?.filter((point) => point.point_type === "DIVERGENCE")
-                  .map((point) => (
-                    <option key={point.id} value={point.id}>
-                      {point.title}
-                    </option>
-                  ))}
+                {mapIsPending ? (
+                  <option value="">Carregando...</option>
+                ) : map?.points?.filter(
+                    (point) => point.point_type === "DIVERGENCE"
+                  ).length ? (
+                  map.points
+                    .filter((point) => point.point_type === "DIVERGENCE")
+                    .map((point) => (
+                      <option key={point.id} value={point.id}>
+                        {point.title}
+                      </option>
+                    ))
+                ) : (
+                  <option value="">
+                    Nenhum ponto de divergência disponível
+                  </option>
+                )}
               </SelectField>
 
               <SelectField
                 label="Selecione a questão"
                 fieldName="questionId"
-                isDisabled={
-                  !pointId ||
-                  divergencePointIsPending ||
-                  !divergencePoint?.tool.questions ||
-                  divergencePoint.tool.questions.length === 0
-                }
+                isDisabled={!pointId || divergencePointIsPending}
               >
-                <option value="">Selecione uma questão</option>
-                {divergencePoint?.tool.questions?.map((question) => (
-                  <option key={question.id} value={question.id}>
-                    {question.question}
-                  </option>
-                ))}
+                {divergencePointIsPending ? (
+                  <option value="">Carregando...</option>
+                ) : divergencePoint?.tool.questions?.length ? (
+                  divergencePoint.tool.questions.map((question) => (
+                    <option key={question.id} value={question.id}>
+                      {question.question}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">Nenhuma questão disponível</option>
+                )}
               </SelectField>
 
               <Button type="submit" colorScheme="blue" w="full">
