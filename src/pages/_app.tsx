@@ -8,8 +8,10 @@ import { sessionManager } from "@/config/session-manager";
 import { useRouter } from "next/router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from "@/config/query-client";
+import { useAuthCheck } from "@/hooks/use-auth-check";
 
 export default function App({ Component, pageProps }: AppProps) {
+  const isAuthenticated = useAuthCheck();
   const router = useRouter();
 
   useResponseInterceptor({
@@ -41,7 +43,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <ChakraProvider theme={theme}>
-        <Component {...pageProps} />
+        <Component {...pageProps} isAuthenticated={isAuthenticated} />
       </ChakraProvider>
     </QueryClientProvider>
   );

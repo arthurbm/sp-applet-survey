@@ -34,9 +34,9 @@ httpClient.interceptors.request.use(async (request) => {
     return request;
   }
 
-  if (!sessionManager.hasSession()) {
-    window.location.replace("/login");
-  }
+  // if (!sessionManager.hasSession()) {
+  //   window.location.replace("/login");
+  // }
 
   if (sessionManager.isExpired()) {
     await updateToken();
