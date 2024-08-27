@@ -5,9 +5,11 @@ import { sessionManager } from "@/config/session-manager";
 export function useAuthCheck() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
+      setIsLoading(true);
       try {
         const response = await fetch("/api/auth/status");
         const data = await response.json();
@@ -28,6 +30,8 @@ export function useAuthCheck() {
       } catch (error) {
         console.error("Error checking auth status:", error);
         setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -40,5 +44,5 @@ export function useAuthCheck() {
     };
   }, [router]);
 
-  return isAuthenticated;
+  return { isAuthenticated, isLoading };
 }

@@ -5,6 +5,7 @@ import { FullPageLayout } from "@/templates/full-page-layout";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import banner from "@/assets/images/banner.jpg";
+import { useAuthCheck } from "@/hooks/use-auth-check";
 
 const fonts = Montserrat({
   weight: ["300", "400", "500", "600", "700"],
@@ -13,6 +14,15 @@ const fonts = Montserrat({
 
 export default function Home() {
   const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuthCheck();
+
+  const handleClick = () => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    } else {
+      router.push("/login");
+    }
+  };
 
   return (
     <>
@@ -36,12 +46,13 @@ export default function Home() {
             </Text>
             <Image src={banner} alt="Survey" width={500} height={500} />
             <Button
-              onClick={() => router.push("/login")}
+              onClick={handleClick}
               colorScheme="pink"
               size="md"
               w="full"
               mt={8}
               mb={4}
+              isLoading={isLoading}
             >
               Vamos lá!
             </Button>
