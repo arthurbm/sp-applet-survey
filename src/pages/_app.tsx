@@ -11,7 +11,7 @@ import queryClient from "@/config/query-client";
 import { useAuthCheck } from "@/hooks/use-auth-check";
 
 export default function App({ Component, pageProps }: AppProps) {
-  const { isAuthenticated } = useAuthCheck();
+  const isAuthenticated = useAuthCheck();
   const router = useRouter();
 
   useResponseInterceptor({
